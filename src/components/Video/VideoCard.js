@@ -43,6 +43,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
 
       if (data.success) {
         onDelete(video._id);
+        window.location.reload(); // Recargar la página
       } else {
         throw new Error(data.error || 'Failed to delete video');
       }

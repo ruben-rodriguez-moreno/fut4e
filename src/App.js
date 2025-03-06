@@ -7,6 +7,10 @@ import Trending from './components/Pages/Trending';
 import Categories from './components/Pages/Categories';
 import MyVideos from './components/Pages/MyVideos';
 import Favorites from './components/Pages/Favorites';
+import Profile from './components/Pages/Profile';
+import UserProfile from './components/Pages/UserProfile';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -16,6 +20,8 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [currentPage, setCurrentPage] = useState('home');
   const [showMenu, setShowMenu] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const fetchVideos = async () => {
     try {
@@ -116,7 +122,6 @@ function App() {
     }
 
     try {
-      console.log('Attempting to delete video:', videoId);
       const response = await fetch(`http://localhost:5000/api/videos/${videoId}`, {
         method: 'DELETE',
         headers: {
@@ -126,20 +131,11 @@ function App() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to delete video');
-      }
-
       if (data.success) {
-        console.log('Video deleted successfully:', videoId);
         setVideos(prevVideos => prevVideos.filter(video => video._id !== videoId));
-      } else {
-        throw new Error('Delete operation failed');
       }
     } catch (err) {
       console.error('Error deleting video:', err);
-      alert(err.message || 'Failed to delete video');
-      await fetchVideos(); // Refresh video list on error
     }
   };
 
@@ -158,9 +154,21 @@ function App() {
     setShowMenu(false);
   };
 
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleUpdateProfile = (updatedUser) => {
+    setCurrentUser(updatedUser);
+  };
+
+  const filteredVideos = videos.filter(video =>
+    video.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderPage = () => {
     const commonProps = {
-      videos,
+      videos: filteredVideos,
       currentUser,
       onLike: handleLike,
       onComment: handleComment,
@@ -178,6 +186,10 @@ function App() {
         return currentUser ? <MyVideos {...commonProps} /> : null;
       case 'favorites':
         return currentUser ? <Favorites {...commonProps} /> : null;
+      case 'profile':
+        return currentUser ? <Profile currentUser={currentUser} onUpdateProfile={handleUpdateProfile} /> : null;
+      case 'userProfile':
+        return <UserProfile userId={selectedUserId} {...commonProps} />;
       default:
         return <Home {...commonProps} />;
     }
@@ -251,11 +263,29 @@ function App() {
                       <i className="menu-icon">⭐</i>
                       Favorites
                     </button>
+                    <button 
+                      className="menu-item"
+                      onClick={() => handlePageChange('profile')}
+                    >
+                      <i className="menu-icon">👤</i>
+                      My Profile
+                    </button>
                   </div>
                 )}
               </div>
             )}
           </div>
+        </div>
+        <div className="search-bar">
+          <input 
+            type="text" 
+            placeholder="Search videos..." 
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <button className="search-icon">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
         </div>
         {currentUser ? (
           <div className="user-controls">
@@ -268,7 +298,9 @@ function App() {
             </button>
           </div>
         ) : (
-          <button onClick={() => setShowAuth(true)}>Login / Register</button>
+          <button className="auth-icon" onClick={() => setShowAuth(true)}>
+            <FontAwesomeIcon icon={faUser} />
+          </button>
         )}
       </nav>
 

@@ -18,7 +18,7 @@ function Categories({ videos, currentUser, onLike, onComment, onDelete }) {
           return (
             <div key={key} className="category-card">
               <h3>{name}</h3>
-              <div className="video-grid">
+              <div className="video-grid animated-grid">
                 {categoryVideos.length > 0 ? (
                   categoryVideos.map(video => (
                     <VideoCard 

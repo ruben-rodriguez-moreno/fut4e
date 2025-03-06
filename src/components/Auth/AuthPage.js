@@ -8,7 +8,7 @@ function AuthPage({ onLogin, onClose }) {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
+      <div className="auth-container animated-container">
         <button className="auth-close-btn" onClick={onClose}>×</button>
         <h2>{isLoginMode ? 'Welcome Back!' : 'Create Account'}</h2>
         {isLoginMode ? (

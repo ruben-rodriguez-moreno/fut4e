@@ -9,7 +9,7 @@ function MyVideos({ videos, currentUser, onLike, onComment, onDelete }) {
   return (
     <div className="page-container">
       <h2>My Videos</h2>
-      <div className="video-grid">
+      <div className="video-grid animated-grid">
         {userVideos.map(video => (
           <VideoCard 
             key={video._id} 

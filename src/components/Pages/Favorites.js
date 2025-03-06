@@ -9,7 +9,7 @@ function Favorites({ videos, currentUser, onLike, onComment }) {
   return (
     <div className="page-container">
       <h2>My Favorite Videos</h2>
-      <div className="video-grid">
+      <div className="video-grid animated-grid">
         {favoriteVideos.map(video => (
           <VideoCard 
             key={video._id} 

@@ -3,7 +3,7 @@ import VideoCard from '../Video/VideoCard';
 
 function Home({ videos, currentUser, onLike, onComment, onDelete }) {
   return (
-    <div className="video-grid">
+    <div className="video-grid animated-grid">
       {videos.map(video => (
         <VideoCard 
           key={video._id} 
