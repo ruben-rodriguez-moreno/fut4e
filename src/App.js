@@ -8,6 +8,7 @@ import Categories from './components/Pages/Categories';
 import MyVideos from './components/Pages/MyVideos';
 import Favorites from './components/Pages/Favorites';
 import Profile from './components/Pages/Profile';
+import EditProfile from './components/Pages/EditProfile';
 import UserProfile from './components/Pages/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -20,8 +21,10 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [currentPage, setCurrentPage] = useState('home');
   const [showMenu, setShowMenu] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserId] = useState(null);
+
 
   const fetchVideos = async () => {
     try {
@@ -152,6 +155,7 @@ function App() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
     setShowMenu(false);
+    setShowProfileMenu(false);
   };
 
   const handleSearch = (e) => {
@@ -160,6 +164,7 @@ function App() {
 
   const handleUpdateProfile = (updatedUser) => {
     setCurrentUser(updatedUser);
+    setCurrentPage('profile');
   };
 
   const filteredVideos = videos.filter(video =>
@@ -187,7 +192,9 @@ function App() {
       case 'favorites':
         return currentUser ? <Favorites {...commonProps} /> : null;
       case 'profile':
-        return currentUser ? <Profile currentUser={currentUser} onUpdateProfile={handleUpdateProfile} /> : null;
+        return currentUser ? <Profile currentUser={currentUser} onEditProfile={() => setCurrentPage('editProfile')} {...commonProps} /> : null;
+      case 'editProfile':
+        return currentUser ? <EditProfile currentUser={currentUser} onUpdateProfile={handleUpdateProfile} /> : null;
       case 'userProfile':
         return <UserProfile userId={selectedUserId} {...commonProps} />;
       default:
@@ -263,13 +270,6 @@ function App() {
                       <i className="menu-icon">⭐</i>
                       Favorites
                     </button>
-                    <button 
-                      className="menu-item"
-                      onClick={() => handlePageChange('profile')}
-                    >
-                      <i className="menu-icon">👤</i>
-                      My Profile
-                    </button>
                   </div>
                 )}
               </div>
@@ -290,12 +290,34 @@ function App() {
         {currentUser ? (
           <div className="user-controls">
             <span>Welcome, {currentUser.username}</span>
-            <button onClick={() => {
-              setCurrentUser(null);
-              localStorage.removeItem('token');
-            }}>
-              Logout
-            </button>
+            <div className="profile-menu">
+              <button className="profile-icon" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+                <FontAwesomeIcon icon={faUser} />
+              </button>
+              {showProfileMenu && (
+                <div className="profile-context-menu">
+                  <div className="menu-section">
+                    <button 
+                      className="menu-item"
+                      onClick={() => handlePageChange('profile')}
+                    >
+                      <i className="menu-icon">👤</i>
+                      Profile
+                    </button>
+                    <button 
+                      className="menu-item"
+                      onClick={() => {
+                        setCurrentUser(null);
+                        localStorage.removeItem('token');
+                      }}
+                    >
+                      <i className="menu-icon">🚪</i>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <button className="auth-icon" onClick={() => setShowAuth(true)}>
