@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { getFullImageUrl } from '../../utils/imageUtils';
 
 function EditProfile({ currentUser, onUpdateProfile }) {
   const [formData, setFormData] = useState({
     username: currentUser.username,
     description: currentUser.description || '',
     profilePicture: null,
-    preview: currentUser.profilePicture || '/default-profile.png'
+    preview: getFullImageUrl(currentUser.profilePicture)
   });
 
   const handleSubmit = async (e) => {
@@ -27,6 +28,12 @@ function EditProfile({ currentUser, onUpdateProfile }) {
       });
       const data = await response.json();
       if (data.error) throw new Error(data.error);
+      
+      // Agregar timestamp para evitar caché
+      if (data.profilePicture && !data.profilePicture.includes('?t=')) {
+        data.profilePicture = `${data.profilePicture}?t=${Date.now()}`;
+      }
+      
       onUpdateProfile(data);
     } catch (err) {
       console.error(err);

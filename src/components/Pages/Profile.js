@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getFullImageUrl } from '../../utils/imageUtils';
 
 function Profile({ currentUser, onUpdateProfile }) {
   const [formData, setFormData] = useState({
@@ -17,7 +18,8 @@ function Profile({ currentUser, onUpdateProfile }) {
         username: currentUser.username || '',
         description: currentUser.description || '',
       });
-      setPreviewUrl(currentUser.profilePicture || '');
+      // Usar getFullImageUrl para la URL de vista previa
+      setPreviewUrl(getFullImageUrl(currentUser.profilePicture));
     }
   }, [currentUser]);
 
@@ -67,6 +69,10 @@ function Profile({ currentUser, onUpdateProfile }) {
       const data = await response.json();
       
       if (response.ok) {
+        // Agregar timestamp para evitar cache
+        if (data.profilePicture && !data.profilePicture.includes('?t=')) {
+          data.profilePicture = `${data.profilePicture}?t=${Date.now()}`;
+        }
         onUpdateProfile(data);
         setMessage({ text: 'Profile updated successfully!', type: 'success' });
       } else {
@@ -96,6 +102,10 @@ function Profile({ currentUser, onUpdateProfile }) {
             src={previewUrl || '/default-profile.png'} 
             alt="Profile Preview" 
             className="profile-preview"
+            onError={(e) => {
+              console.log('Error al cargar preview:', e.target.src);
+              e.target.src = '/default-profile.png';
+            }}
           />
           <div className="file-input-container">
             <input

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 import AuthPage from './components/Auth/AuthPage';
 import VideoUpload from './components/Video/VideoUpload';
@@ -12,6 +13,21 @@ import EditProfile from './components/Pages/EditProfile';
 import UserProfile from './components/Pages/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { getFullImageUrl } from './utils/imageUtils';
+import Navigation from './components/Navigation/Navigation';
+
+// For the not found route since useNavigate must be used within Router context
+function NotFoundPage() {
+  const navigate = useNavigate();
+  
+  return (
+    <div className="not-found-page">
+      <h2>Página no encontrada</h2>
+      <p>Lo sentimos, la página que buscas no existe.</p>
+      <button onClick={() => navigate('/')}>Volver al inicio</button>
+    </div>
+  );
+}
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -19,12 +35,11 @@ function App() {
   const [showUpload, setShowUpload] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
-  const [currentPage, setCurrentPage] = useState('home');
   const [showMenu, setShowMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUserId] = useState(null);
-
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [currentPage, setCurrentPage] = useState('home'); // Added missing state
 
   const fetchVideos = async () => {
     try {
@@ -83,8 +98,12 @@ function App() {
   }, []);
 
   const handleLogin = (userData) => {
+    console.log('Login successful, user data:', userData);
     setCurrentUser(userData);
     setShowAuth(false);
+    
+    // Opcional: redirigir al usuario a la página de inicio o a su perfil
+    setCurrentPage('home');
   };
 
   const handleVideoUpload = (newVideo) => {
@@ -163,189 +182,153 @@ function App() {
   };
 
   const handleUpdateProfile = (updatedUser) => {
+    console.log('Perfil actualizado en App.js:', updatedUser);
+    
+    // Agregamos un parámetro de tiempo para evitar problemas de caché
+    if (updatedUser.profilePicture && !updatedUser.profilePicture.includes('?t=')) {
+      updatedUser.profilePicture = `${updatedUser.profilePicture}?t=${Date.now()}`;
+    }
+    
     setCurrentUser(updatedUser);
     setCurrentPage('profile');
+  };
+
+  const handleUserProfileSelect = (username) => {
+    // Buscar al usuario por username y configurar el ID seleccionado
+    const userVideo = videos.find(video => video.author?.username === username);
+    if (userVideo && userVideo.author?._id) {
+      return userVideo.author._id;
+    }
+    return null;
   };
 
   const filteredVideos = videos.filter(video =>
     video.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderPage = () => {
-    const commonProps = {
-      videos: filteredVideos,
-      currentUser,
-      onLike: handleLike,
-      onComment: handleComment,
-      onDelete: handleDelete
-    };
-
-    switch(currentPage) {
-      case 'home':
-        return <Home {...commonProps} />;
-      case 'trending':
-        return <Trending {...commonProps} />;
-      case 'categories':
-        return <Categories {...commonProps} />;
-      case 'myVideos':
-        return currentUser ? <MyVideos {...commonProps} /> : null;
-      case 'favorites':
-        return currentUser ? <Favorites {...commonProps} /> : null;
-      case 'profile':
-        return currentUser ? <Profile currentUser={currentUser} onEditProfile={() => setCurrentPage('editProfile')} {...commonProps} /> : null;
-      case 'editProfile':
-        return currentUser ? <EditProfile currentUser={currentUser} onUpdateProfile={handleUpdateProfile} /> : null;
-      case 'userProfile':
-        return <UserProfile userId={selectedUserId} {...commonProps} />;
-      default:
-        return <Home {...commonProps} />;
-    }
-  };
-
   return (
-    <div className="App">
-      <nav className="navbar">
-        <div className="nav-left">
-          <h1>FUT4E</h1>
-          <div className="menu-container">
-            <button 
-              className="menu-trigger" 
-              onClick={() => setShowMenu(!showMenu)}
-              aria-label="Menu"
-            >
-              <div className="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </button>
-            {showMenu && (
-              <div className="context-menu">
-                <div className="menu-section">
-                  <h3 className="menu-title">Browse</h3>
-                  <button 
-                    className="menu-item"
-                    onClick={() => handlePageChange('home')}
-                  >
-                    <i className="menu-icon">🏠</i>
-                    Home
-                  </button>
-                  <button 
-                    className="menu-item"
-                    onClick={() => handlePageChange('trending')}
-                  >
-                    <i className="menu-icon">🔥</i>
-                    Trending
-                  </button>
-                  <button 
-                    className="menu-item"
-                    onClick={() => handlePageChange('categories')}
-                  >
-                    <i className="menu-icon">📂</i>
-                    Categories
-                  </button>
-                </div>
-                
-                {currentUser && (
-                  <div className="menu-section">
-                    <h3 className="menu-title">My Content</h3>
-                    <button 
-                      className="menu-item"
-                      onClick={() => setShowUpload(true)}
-                    >
-                      <i className="menu-icon">📤</i>
-                      Upload Video
-                    </button>
-                    <button 
-                      className="menu-item"
-                      onClick={() => handlePageChange('myVideos')}
-                    >
-                      <i className="menu-icon">🎥</i>
-                      My Videos
-                    </button>
-                    <button 
-                      className="menu-item"
-                      onClick={() => handlePageChange('favorites')}
-                    >
-                      <i className="menu-icon">⭐</i>
-                      Favorites
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="search-bar">
-          <input 
-            type="text" 
-            placeholder="Search videos..." 
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <button className="search-icon">
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </div>
-        {currentUser ? (
-          <div className="user-controls">
-            <span>Welcome, {currentUser.username}</span>
-            <div className="profile-menu">
-              <button className="profile-icon" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                <FontAwesomeIcon icon={faUser} />
-              </button>
-              {showProfileMenu && (
-                <div className="profile-context-menu">
-                  <div className="menu-section">
-                    <button 
-                      className="menu-item"
-                      onClick={() => handlePageChange('profile')}
-                    >
-                      <i className="menu-icon">👤</i>
-                      Profile
-                    </button>
-                    <button 
-                      className="menu-item"
-                      onClick={() => {
-                        setCurrentUser(null);
-                        localStorage.removeItem('token');
-                      }}
-                    >
-                      <i className="menu-icon">🚪</i>
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <button className="auth-icon" onClick={() => setShowAuth(true)}>
-            <FontAwesomeIcon icon={faUser} />
-          </button>
-        )}
-      </nav>
-
-      {showAuth && (
-        <AuthPage 
-          onLogin={handleLogin} 
-          isLoginMode={showLogin} 
-          onToggleMode={handleAuthToggle}
-          onClose={() => setShowAuth(false)}
+    <BrowserRouter>
+      <div className="App">
+        <Navigation 
+          currentUser={currentUser} 
+          onSearch={handleSearch} 
+          searchQuery={searchQuery}
+          onShowAuth={() => {
+            setShowLogin(true);
+            setShowAuth(true);
+          }}
+          onLogout={() => {
+            setCurrentUser(null);
+            localStorage.removeItem('token');
+          }}
+          onUpload={() => setShowUpload(true)}
         />
-      )}
 
-      {showUpload && (
-        <div className="upload-modal">
-          <VideoUpload onUpload={handleVideoUpload} />
-          <button className="close-btn" onClick={() => setShowUpload(false)}>×</button>
-        </div>
-      )}
+        {showAuth && (
+          <AuthPage 
+            onLogin={handleLogin} 
+            isLoginMode={showLogin} 
+            onToggleMode={handleAuthToggle}
+            onClose={() => setShowAuth(false)}
+          />
+        )}
 
-      <main className="main-content">
-        {renderPage()}
-      </main>
-    </div>
+        {showUpload && (
+          <div className="upload-modal">
+            <VideoUpload onUpload={handleVideoUpload} />
+            <button className="close-btn" onClick={() => setShowUpload(false)}>×</button>
+          </div>
+        )}
+
+        <main className="main-content">
+          <Routes>
+            {/* Página principal - Videos recientes */}
+            <Route path="/" element={
+              <Home 
+                videos={filteredVideos} 
+                currentUser={currentUser} 
+                onLike={handleLike} 
+                onComment={handleComment} 
+                onDelete={handleDelete} 
+              />
+            } />
+            
+            {/* Rutas de navegación principal */}
+            <Route path="/trending" element={
+              <Trending 
+                videos={filteredVideos}
+                currentUser={currentUser}
+                onLike={handleLike}
+                onComment={handleComment}
+                onDelete={handleDelete}
+              />
+            } />
+            <Route path="/categories" element={
+              <Categories 
+                videos={filteredVideos}
+                currentUser={currentUser}
+                onLike={handleLike}
+                onComment={handleComment}
+                onDelete={handleDelete}
+              />
+            } />
+            
+            {/* Rutas que requieren autenticación */}
+            <Route path="/myvideos" element={
+              currentUser ? (
+                <MyVideos 
+                  videos={filteredVideos}
+                  currentUser={currentUser}
+                  onLike={handleLike}
+                  onComment={handleComment}
+                  onDelete={handleDelete}
+                />
+              ) : <Navigate to="/" replace state={{ showLogin: true }} />
+            } />
+            <Route path="/favorites" element={
+              currentUser ? (
+                <Favorites 
+                  videos={filteredVideos}
+                  currentUser={currentUser}
+                  onLike={handleLike}
+                  onComment={handleComment}
+                />
+              ) : <Navigate to="/" replace state={{ showLogin: true }} />
+            } />
+            <Route path="/profile" element={
+              currentUser ? (
+                <Profile 
+                  currentUser={currentUser} 
+                  onUpdateProfile={handleUpdateProfile} 
+                />
+              ) : <Navigate to="/" replace state={{ showLogin: true }} />
+            } />
+            <Route path="/edit-profile" element={
+              currentUser ? (
+                <EditProfile 
+                  currentUser={currentUser} 
+                  onUpdateProfile={handleUpdateProfile}
+                />
+              ) : <Navigate to="/" replace state={{ showLogin: true }} />
+            } />
+            
+            {/* Ruta para perfiles de usuario públicos */}
+            <Route path="/usuario/:username" element={
+              <UserProfile 
+                currentUser={currentUser}
+                onLike={handleLike}
+                onComment={handleComment}
+                onDelete={handleDelete}
+                onUpdateProfile={handleUpdateProfile}
+              />
+            } />
+            
+            {/* Ruta para manejar URLs no encontradas */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 

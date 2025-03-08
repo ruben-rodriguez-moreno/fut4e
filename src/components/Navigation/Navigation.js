@@ -1,0 +1,165 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faUser, 
+  faSearch, 
+  faHome, 
+  faFire, 
+  faFolder, 
+  faUpload, 
+  faVideo, 
+  faStar, 
+  faUserCircle, 
+  faEye, 
+  faSignOutAlt 
+} from '@fortawesome/free-solid-svg-icons';
+import { getFullImageUrl } from '../../utils/imageUtils';
+import './Navigation.css';
+
+function Navigation({ currentUser, searchQuery, onSearch, onShowAuth, onLogout, onUpload }) {
+  const [showMenu, setShowMenu] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const handlePageChange = (path) => {
+    navigate(path);
+    setShowMenu(false);
+    setShowProfileMenu(false);
+  };
+
+  return (
+    <nav className="navbar">
+      <div className="nav-left">
+        <Link to="/" className="brand">FUT4E</Link>
+        <div className="menu-container">
+          <button 
+            className="menu-trigger" 
+            onClick={() => setShowMenu(!showMenu)}
+            aria-label="Menu"
+          >
+            <div className="hamburger-icon">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </button>
+          {showMenu && (
+            <div className="context-menu">
+              <div className="menu-section">
+                <h3 className="menu-title">Explorar</h3>
+                <Link to="/" className="menu-item" onClick={() => setShowMenu(false)}>
+                  <FontAwesomeIcon icon={faHome} className="menu-icon" />
+                  Inicio
+                </Link>
+                <Link to="/trending" className="menu-item" onClick={() => setShowMenu(false)}>
+                  <FontAwesomeIcon icon={faFire} className="menu-icon" />
+                  Tendencias
+                </Link>
+                <Link to="/categories" className="menu-item" onClick={() => setShowMenu(false)}>
+                  <FontAwesomeIcon icon={faFolder} className="menu-icon" />
+                  Categorías
+                </Link>
+              </div>
+              
+              {currentUser && (
+                <div className="menu-section">
+                  <h3 className="menu-title">Mi Contenido</h3>
+                  <button 
+                    className="menu-item"
+                    onClick={onUpload}
+                  >
+                    <FontAwesomeIcon icon={faUpload} className="menu-icon" />
+                    Subir Vídeo
+                  </button>
+                  <Link to="/myvideos" className="menu-item" onClick={() => setShowMenu(false)}>
+                    <FontAwesomeIcon icon={faVideo} className="menu-icon" />
+                    Mis Vídeos
+                  </Link>
+                  <Link to="/favorites" className="menu-item" onClick={() => setShowMenu(false)}>
+                    <FontAwesomeIcon icon={faStar} className="menu-icon" />
+                    Favoritos
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="search-bar">
+        <input 
+          type="text" 
+          placeholder="Buscar vídeos..." 
+          value={searchQuery}
+          onChange={(e) => onSearch(e)}
+        />
+        <button className="search-icon" aria-label="Search">
+          <FontAwesomeIcon icon={faSearch} />
+        </button>
+      </div>
+      {currentUser ? (
+        <div className="user-controls">
+          <div className="profile-menu">
+            <button 
+              className="profile-icon" 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              aria-label="User menu"
+            >
+              {currentUser.profilePicture ? (
+                <img
+                  src={getFullImageUrl(currentUser.profilePicture)}
+                  alt={currentUser.username}
+                  className="user-avatar"
+                  onError={(e) => {
+                    e.target.src = '/default-profile.png';
+                  }}
+                />
+              ) : (
+                <FontAwesomeIcon icon={faUser} />
+              )}
+            </button>
+            {showProfileMenu && (
+              <div className="profile-context-menu">
+                <div className="user-info">
+                  <span className="username">{currentUser.username}</span>
+                  <span className="email">{currentUser.email}</span>
+                </div>
+                <div className="menu-section">
+                  <Link to="/profile" className="menu-item" onClick={() => setShowProfileMenu(false)}>
+                    <FontAwesomeIcon icon={faUserCircle} className="menu-icon" />
+                    Mi Perfil
+                  </Link>
+                  <Link to={`/usuario/${currentUser.username}`} className="menu-item" onClick={() => setShowProfileMenu(false)}>
+                    <FontAwesomeIcon icon={faEye} className="menu-icon" />
+                    Ver Perfil Público
+                  </Link>
+                  <button 
+                    className="menu-item"
+                    onClick={() => {
+                      onLogout();
+                      setShowProfileMenu(false);
+                      navigate('/');
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faSignOutAlt} className="menu-icon" />
+                    Cerrar Sesión
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <button 
+          className="auth-button" 
+          onClick={onShowAuth}
+          aria-label="Login"
+        >
+          <FontAwesomeIcon icon={faUser} />
+        </button>
+      )}
+    </nav>
+  );
+}
+
+export default Navigation;

@@ -1,69 +1,128 @@
 import { useState, useEffect } from 'react';
-import VideoCard from '../Video/VideoCard';
-import './UserProfile.css'; // Ensure to create this file with appropriate styles
+import { useParams } from 'react-router-dom';
+import './UserProfile.css';
+import ProfileCard from './UserProfile/ProfileCard';
+import ProfileHeader from './UserProfile/ProfileHeader';
+import ProfileDetails from './UserProfile/ProfileDetails';
+import EditButton from './UserProfile/EditButton';
+import ProfileEditForm from './UserProfile/ProfileEditForm';
 
-function UserProfile({ userId, currentUser, onLike, onComment, onDelete }) {
+function UserProfile({ currentUser, onLike, onComment, onDelete, onUpdateProfile }) {
+  const { username } = useParams(); // Obtener el nombre de usuario de la URL
   const [user, setUser] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserByUsername = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const response = await fetch(`http://localhost:5000/api/auth/${userId}`);
-        const data = await response.json();
-        setUser(data);
+        // Primero buscamos al usuario por nombre de usuario
+        const response = await fetch(`http://localhost:5000/api/auth/username/${username}`);
+        
+        if (!response.ok) {
+          throw new Error('No se pudo encontrar el usuario');
+        }
+        
+        const userData = await response.json();
+        setUser(userData);
+        
+        // Luego buscamos sus videos
+        const videosResponse = await fetch(`http://localhost:5000/api/videos?author=${userData._id}`);
+        
+        if (!videosResponse.ok) {
+          throw new Error('No se pudieron cargar los videos del usuario');
+        }
+        
+        const videosData = await videosResponse.json();
+        setVideos(videosData);
       } catch (err) {
         console.error(err);
+        setError('Error al cargar el perfil: ' + err.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    const fetchUserVideos = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/videos?author=${userId}`);
-        const data = await response.json();
-        setVideos(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchUser();
-    fetchUserVideos();
-  }, [userId]);
+    if (username) {
+      fetchUserByUsername();
+    }
+  }, [username]);
 
   const handleEditProfile = () => {
-    // Implement the logic to edit the profile, such as opening a form/modal
-    console.log('Editar perfil');
+    // Solo permitir editar si es el perfil del usuario actual
+    if (currentUser && user && currentUser._id === user._id) {
+      setIsEditing(true);
+    } else {
+      alert('Solo puedes editar tu propio perfil');
+    }
   };
 
-  if (!user) return <div>Loading...</div>;
+  const handleSaveProfile = (updatedUser) => {
+    setUser(updatedUser);
+    setIsEditing(false);
+    
+    // Si el usuario actual está viendo su propio perfil, actualizar el estado global también
+    if (currentUser && user && currentUser._id === user._id && typeof onUpdateProfile === 'function') {
+      onUpdateProfile(updatedUser);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  if (isLoading) return (
+    <div className="user-profile-loading">
+      <div className="loading-spinner"></div>
+      <p>Cargando perfil...</p>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="user-profile-error">
+      <div className="error-icon">⚠️</div>
+      <h3>Ups, algo salió mal</h3>
+      <p>{error}</p>
+      <button onClick={() => window.history.back()}>Volver</button>
+    </div>
+  );
+  
+  if (!user) return (
+    <div className="user-profile-not-found">
+      <div className="not-found-icon">🔍</div>
+      <h3>Usuario no encontrado</h3>
+      <p>No pudimos encontrar el usuario "{username}"</p>
+      <button onClick={() => window.history.back()}>Volver</button>
+    </div>
+  );
 
   return (
-    <div className="user-profile">
-      <header className="profile-header">
-        <img src={user.profilePicture || '/default-profile.png'} alt="Profile" className="profile-pic" />
-        <div className="profile-info">
-          <h2>{user.username}</h2>
-          <p>{user.description}</p>
-        </div>
-      </header>
-      <section className="profile-content">
-        <div className="video-grid">
-          {videos.map(video => (
-            <VideoCard 
-              key={video._id} 
-              video={video}
-              currentUser={currentUser}
-              onLike={onLike}
-              onComment={onComment}
-              onDelete={onDelete}
-            />
-          ))}
-        </div>
-      </section>
-      <button onClick={handleEditProfile} className="edit-profile-button">
-        Editar Perfil
-      </button>
+    <div className="user-profile-container">
+      {isEditing ? (
+        <ProfileEditForm 
+          user={user} 
+          onSave={handleSaveProfile} 
+          onCancel={handleCancelEdit} 
+        />
+      ) : (
+        <ProfileCard>
+          <ProfileHeader user={user} />
+          <ProfileDetails 
+            videos={videos}
+            currentUser={currentUser}
+            onLike={onLike}
+            onComment={onComment}
+            onDelete={onDelete}
+          />
+          {currentUser && user && currentUser._id === user._id && (
+            <EditButton onClick={handleEditProfile} />
+          )}
+        </ProfileCard>
+      )}
     </div>
   );
 }

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Comments from './Comments';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faComment, faTrash, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import './VideoCard.css';
 
 function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
   const [showComments, setShowComments] = useState(false);
@@ -8,10 +12,6 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleLike = () => {
-    if (!currentUser) {
-      onLike(video._id);
-      return;
-    }
     onLike(video._id);
   };
 
@@ -43,7 +43,6 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
 
       if (data.success) {
         onDelete(video._id);
-        window.location.reload(); // Recargar la página
       } else {
         throw new Error(data.error || 'Failed to delete video');
       }
@@ -57,6 +56,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
   };
 
   const isCreator = currentUser?._id === video.author?._id;
+  const isLiked = currentUser && video.likes.some(like => like._id === currentUser._id);
 
   return (
     <>
@@ -74,22 +74,37 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
                   onClick={() => setShowConfirmation(true)}
                   className="delete-btn"
                   disabled={isDeleting}
+                  aria-label="Delete video"
                 >
-                  {isDeleting ? 'Deleting...' : '🗑️'}
+                  {isDeleting ? (
+                    <FontAwesomeIcon icon={faSpinner} spin />
+                  ) : (
+                    <FontAwesomeIcon icon={faTrash} />
+                  )}
                 </button>
               </div>
             )}
           </div>
-          <p>By {video.author?.username || 'Unknown User'}</p>
+          <p className="video-author">
+            Por{' '}
+            <Link 
+              to={`/usuario/${video.author?.username || 'unknown'}`}
+              className="author-link"
+            >
+              {video.author?.username || 'Unknown User'}
+            </Link>
+          </p>
           <div className="video-actions">
             <button 
               onClick={handleLike}
-              className={!currentUser ? 'action-button disabled' : 'action-button'}
+              className={!currentUser ? 'action-button disabled' : `action-button ${isLiked ? 'liked' : ''}`}
             >
-              {video.likes.length} Likes
+              <FontAwesomeIcon icon={faHeart} className={isLiked ? 'liked-icon' : ''} />
+              {video.likes.length} {video.likes.length === 1 ? 'Like' : 'Likes'}
             </button>
             <button onClick={() => setShowComments(!showComments)}>
-              {video.comments.length} Comments
+              <FontAwesomeIcon icon={faComment} />
+              {video.comments.length} {video.comments.length === 1 ? 'Comment' : 'Comments'}
             </button>
           </div>
           {showComments && (
@@ -108,7 +123,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
           <div className="confirmation-content">
             <h3>Delete Video</h3>
             <p>Are you sure you want to delete this video?</p>
-            <p>This action cannot be undone.</p>
+            <p className="warning-text">This action cannot be undone.</p>
             <div className="confirmation-buttons">
               <button 
                 className="cancel-btn"
