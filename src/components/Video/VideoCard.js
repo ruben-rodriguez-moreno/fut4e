@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faComment, faTrash, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import './VideoCard.css';
 
-function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
+function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor = true }) {
   const [showComments, setShowComments] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
@@ -85,15 +85,42 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete }) {
               </div>
             )}
           </div>
-          <p className="video-author">
-            Por{' '}
-            <Link 
-              to={`/usuario/${video.author?.username || 'unknown'}`}
-              className="author-link"
-            >
-              {video.author?.username || 'Unknown User'}
-            </Link>
-          </p>
+          {showAuthor !== false && video.author && (
+            <p className="video-author">
+              Por <Link 
+                to={`/perfil/${encodeURIComponent(video.author.username)}`} 
+                className="author-link"
+                onClick={(e) => {
+                  // Validar que el autor tiene un nombre de usuario válido
+                  if (!video.author.username || video.author.username.trim() === '') {
+                    e.preventDefault();
+                    alert('Información de autor no disponible');
+                    return;
+                  }
+                  
+                  // Si queremos pre-verificar que el usuario existe antes de navegar
+                  // Comentado porque puede generar muchas llamadas API
+                  /* 
+                  e.preventDefault();
+                  const cleanUsername = video.author.username.trim();
+                  fetch(`http://localhost:5000/api/auth/username/${encodeURIComponent(cleanUsername)}`)
+                    .then(response => {
+                      if (response.ok) {
+                        window.location.href = `/perfil/${encodeURIComponent(cleanUsername)}`;
+                      } else {
+                        alert('No se pudo cargar el perfil del autor');
+                      }
+                    })
+                    .catch(err => {
+                      console.error("Error verificando autor:", err);
+                    });
+                  */
+                }}
+              >
+                {video.author.username || 'Usuario desconocido'}
+              </Link>
+            </p>
+          )}
           <div className="video-actions">
             <button 
               onClick={handleLike}

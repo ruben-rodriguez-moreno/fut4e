@@ -129,7 +129,52 @@ function Navigation({ currentUser, searchQuery, onSearch, onShowAuth, onLogout, 
                     <FontAwesomeIcon icon={faUserCircle} className="menu-icon" />
                     Mi Perfil
                   </Link>
-                  <Link to={`/usuario/${currentUser.username}`} className="menu-item" onClick={() => setShowProfileMenu(false)}>
+                  <Link 
+                    to={`/perfil/${encodeURIComponent(currentUser.username)}`} 
+                    className="menu-item" 
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevenir navegación por defecto
+                      
+                      // Trim username para eliminar espacios en blanco
+                      const cleanUsername = currentUser.username.trim();
+                      const encodedUsername = encodeURIComponent(cleanUsername);
+                      
+                      // Verificar primero si el usuario existe
+                      fetch(`http://localhost:5000/api/auth/username/${encodedUsername}`)
+                        .then(response => {
+                          if (response.ok) {
+                            // Usuario existe, proceder a la navegación
+                            navigate(`/perfil/${encodedUsername}`);
+                          } else if (response.status === 404) {
+                            // Intentar con búsqueda alternativa
+                            return fetch(`http://localhost:5000/api/auth/search?username=${encodedUsername}`)
+                              .then(searchResponse => {
+                                if (searchResponse.ok) {
+                                  return searchResponse.json();
+                                }
+                                throw new Error("Usuario no encontrado");
+                              })
+                              .then(searchResults => {
+                                if (Array.isArray(searchResults) && searchResults.length > 0) {
+                                  // Usar el nombre de usuario exacto del resultado encontrado
+                                  const foundUser = searchResults[0];
+                                  navigate(`/perfil/${encodeURIComponent(foundUser.username)}`);
+                                } else {
+                                  alert("No se pudo encontrar tu perfil de usuario");
+                                }
+                              });
+                          } else {
+                            alert("Error al cargar el perfil. Por favor, intenta de nuevo más tarde.");
+                          }
+                          setShowProfileMenu(false);
+                        })
+                        .catch(err => {
+                          console.error("Error verificando usuario:", err);
+                          alert("No se pudo verificar el perfil. Verifica tu conexión a internet.");
+                          setShowProfileMenu(false);
+                        });
+                    }}
+                  >
                     <FontAwesomeIcon icon={faEye} className="menu-icon" />
                     Ver Perfil Público
                   </Link>

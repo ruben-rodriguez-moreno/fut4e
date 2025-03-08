@@ -101,6 +101,7 @@ function Home({ videos, currentUser, onLike, onComment, onDelete }) {
                   onLike={onLike}
                   onComment={onComment}
                   onDelete={onDelete}
+                  showAuthor={true} // Aseguramos que el autor es visible y enlazable
                 />
               ))}
             </div>

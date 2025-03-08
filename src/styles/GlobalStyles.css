@@ -1,0 +1,196 @@
+/* ===== VARIABLES GLOBALES ===== */
+:root {
+  /* Colores principales */
+  --color-primary: #61dafb;
+  --color-primary-dark: #4fa8c7;
+  --color-primary-light: rgba(97, 218, 251, 0.3);
+  
+  /* Colores secundarios */
+  --color-secondary: #6c757d;
+  --color-secondary-dark: #5a6268;
+  
+  /* Colores de texto */
+  --text-dark: #333;
+  --text-medium: #666;
+  --text-light: #888;
+  
+  /* Colores de fondo */
+  --bg-white: #fff;
+  --bg-light: #f8f9fa;
+  --bg-gradient: linear-gradient(to right, #f8f9fa, #e9ecef);
+  
+  /* Colores de borde */
+  --border-color: #eaeaea;
+  --border-light: #f0f0f0;
+  --border-dark: #ddd;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.1);
+  --shadow-inset: inset 0 0 10px rgba(0, 0, 0, 0.03);
+  --shadow-primary: 0 3px 8px rgba(97, 218, 251, 0.3);
+  
+  /* Tipografía */
+  --font-family-base: 'Roboto', 'Segoe UI', Arial, sans-serif;
+  --font-family-headings: 'Roboto', 'Segoe UI', Arial, sans-serif;
+  
+  /* Tamaños de fuente */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 36px;
+  
+  /* Pesos de fuente */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Espaciados */
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 15px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+  --spacing-2xl: 40px;
+  
+  /* Bordes */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 30px;
+  --border-radius-circle: 50%;
+  
+  /* Transiciones */
+  --transition-base: all 0.3s ease;
+}
+
+/* ===== ESTILOS BASE ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: var(--text-dark);
+  background-color: var(--bg-light);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-headings);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+  color: var(--text-dark);
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ===== CLASES DE UTILIDAD ===== */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--text-light);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-full);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: var(--transition-base);
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(97, 218, 251, 0.4);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-secondary-dark);
+  transform: translateY(-2px);
+}
+
+/* Márgenes y paddings */
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mt-5 { margin-top: var(--spacing-xl); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }
+
+/* ===== MEDIA QUERIES ===== */
+@media screen and (max-width: 768px) {
+  :root {
+    --font-size-base: 15px;
+    --font-size-xl: 22px;
+    --font-size-2xl: 24px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :root {
+    --spacing-lg: 15px;
+    --spacing-xl: 20px;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+}

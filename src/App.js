@@ -11,10 +11,12 @@ import Favorites from './components/Pages/Favorites';
 import Profile from './components/Pages/Profile';
 import EditProfile from './components/Pages/EditProfile';
 import UserProfile from './components/Pages/UserProfile';
+import UserProfilePublic from './components/Pages/UserProfilePublic';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { getFullImageUrl } from './utils/imageUtils';
 import Navigation from './components/Navigation/Navigation';
+import UserSearch from './components/Pages/UserSearch';
 
 // For the not found route since useNavigate must be used within Router context
 function NotFoundPage() {
@@ -71,6 +73,9 @@ function App() {
           const data = await response.json();
           if (!data.error) {
             setCurrentUser(data);
+          } else {
+            // Si hay un error en la validación del token, limpiarlo
+            localStorage.removeItem('token');
           }
         } catch (err) {
           console.error(err);
@@ -103,6 +108,14 @@ function App() {
     setShowAuth(false);
     
     // Opcional: redirigir al usuario a la página de inicio o a su perfil
+    setCurrentPage('home');
+  };
+
+  // Asegurarse de que esta función se pase correctamente a AuthPage
+  const handleRegister = (userData) => {
+    console.log('Registration successful, user data:', userData);
+    setCurrentUser(userData);
+    setShowAuth(false);
     setCurrentPage('home');
   };
 
@@ -227,6 +240,7 @@ function App() {
         {showAuth && (
           <AuthPage 
             onLogin={handleLogin} 
+            onRegister={handleRegister}
             isLoginMode={showLogin} 
             onToggleMode={handleAuthToggle}
             onClose={() => setShowAuth(false)}
@@ -321,6 +335,28 @@ function App() {
                 onDelete={handleDelete}
                 onUpdateProfile={handleUpdateProfile}
               />
+            } />
+            
+            {/* Nueva ruta para perfiles públicos con mejor manejo de errores */}
+            <Route path="/perfil/:username" element={
+              <UserProfilePublic 
+                currentUser={currentUser}
+                onLike={handleLike}
+                onComment={handleComment}
+              />
+            } />
+            
+            {/* Ruta para búsqueda de usuarios */}
+            <Route path="/buscar-usuarios" element={
+              <UserSearch />
+            } />
+            
+            {/* Ruta de respaldo para manejar perfiles inválidos */}
+            <Route path="/perfil" element={
+              <Navigate to="/buscar-usuarios" replace />
+            } />
+            <Route path="/usuario" element={
+              <Navigate to="/buscar-usuarios" replace />
             } />
             
             {/* Ruta para manejar URLs no encontradas */}
