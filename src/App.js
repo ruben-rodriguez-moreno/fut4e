@@ -166,10 +166,6 @@ function App() {
       return;
     }
 
-    if (!window.confirm('Are you sure you want to delete this video?')) {
-      return;
-    }
-
     try {
       const response = await fetch(`http://localhost:5000/api/videos/${videoId}`, {
         method: 'DELETE',
@@ -182,6 +178,8 @@ function App() {
 
       if (data.success) {
         setVideos(prevVideos => prevVideos.filter(video => video._id !== videoId));
+        // Recargar la página después de eliminar el video exitosamente
+        window.location.reload();
       }
     } catch (err) {
       console.error('Error deleting video:', err);

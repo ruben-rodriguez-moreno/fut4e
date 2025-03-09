@@ -23,8 +23,8 @@ function Navigation({ currentUser, searchQuery, onSearch, onShowAuth, onLogout, 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
 
-  // Verificar si el usuario es administrador
-  const isAdmin = currentUser && currentUser.email === process.env.REACT_APP_ADMIN_EMAIL;
+  // Verificar si el usuario es administrador usando el rol en lugar del email
+  const isAdmin = currentUser && currentUser.role === 'admin';
 
   const handlePageChange = (path) => {
     navigate(path);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import SupportRequests from './SupportRequests';
+import UserManagement from './UserManagement';
 import './AdminDashboard.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faUsers, faVideo, faChartLine } from '@fortawesome/free-solid-svg-icons';
@@ -8,8 +9,8 @@ import { faHeadset, faUsers, faVideo, faChartLine } from '@fortawesome/free-soli
 function AdminDashboard({ currentUser }) {
   const [activeTab, setActiveTab] = useState('support');
   
-  // Comprobar si el usuario es administrador
-  const isAdmin = currentUser && currentUser.email === 'fut4ebusiness@gmail.com';
+  // Comprobar si el usuario es administrador por su rol en lugar de por su email
+  const isAdmin = currentUser && currentUser.role === 'admin';
   
   if (!currentUser) {
     return <Navigate to="/" replace />;
@@ -19,7 +20,7 @@ function AdminDashboard({ currentUser }) {
     return (
       <div className="admin-access-denied">
         <h2>Acceso Restringido</h2>
-        <p>Lo sentimos, solo el administrador puede acceder a esta página.</p>
+        <p>Lo sentimos, solo los administradores pueden acceder a esta página.</p>
         <button onClick={() => window.history.back()}>Volver</button>
       </div>
     );
@@ -40,7 +41,10 @@ function AdminDashboard({ currentUser }) {
               <FontAwesomeIcon icon={faHeadset} className="nav-icon" />
               Solicitudes de Soporte
             </li>
-            <li className="disabled">
+            <li 
+              className={activeTab === 'users' ? 'active' : ''}
+              onClick={() => setActiveTab('users')}
+            >
               <FontAwesomeIcon icon={faUsers} className="nav-icon" />
               Gestión de Usuarios
             </li>
@@ -73,7 +77,7 @@ function AdminDashboard({ currentUser }) {
         
         <div className="admin-content">
           {activeTab === 'support' && <SupportRequests />}
-          {activeTab === 'users' && <div className="coming-soon">Gestión de usuarios - Próximamente</div>}
+          {activeTab === 'users' && <UserManagement />}
           {activeTab === 'content' && <div className="coming-soon">Gestión de contenido - Próximamente</div>}
           {activeTab === 'stats' && <div className="coming-soon">Estadísticas - Próximamente</div>}
         </div>
