@@ -110,6 +110,58 @@
   line-height: 1.4;
 }
 
+.success-message {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid #2e7d32;
+  margin-bottom: 15px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.forgot-password button {
+  background: none;
+  border: none;
+  color: #61dafb;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgot-password button:hover {
+  color: #4fa8c7;
+}
+
+.form-actions {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.secondary-button {
+  background: none;
+  border: 1px solid #ddd;
+  color: #666;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-button:hover {
+  background-color: #f5f5f5;
+  border-color: #bbb;
+  color: #333;
+}
+
 .server-status-info {
   margin-top: 10px;
   padding-top: 10px;
@@ -153,4 +205,12 @@
 
 .retry-button:hover {
   background-color: #45a049;
+}
+
+.form-description {
+  text-align: center;
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }

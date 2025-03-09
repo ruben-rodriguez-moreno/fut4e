@@ -2,14 +2,23 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faComment, faTrash, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faComment, faTrash, faSpinner, faFlag } from '@fortawesome/free-solid-svg-icons';
 import './VideoCard.css';
 
-function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor = true }) {
+function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor = true, showReport = true }) {
   const [showComments, setShowComments] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportData, setReportData] = useState({
+    reason: '',
+    details: '',
+    name: currentUser?.username || '',
+    email: currentUser?.email || ''
+  });
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportStatus, setReportStatus] = useState({ message: '', type: '' });
 
   const handleLike = () => {
     onLike(video._id);
@@ -52,6 +61,56 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
       setTimeout(() => setDeleteError(''), 3000);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!reportData.reason) {
+      setReportStatus({ message: 'Por favor selecciona una razón para el reporte', type: 'error' });
+      return;
+    }
+    
+    setIsReporting(true);
+    setReportStatus({ message: '', type: '' });
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/support/report-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(currentUser && { 'x-auth-token': localStorage.getItem('token') })
+        },
+        body: JSON.stringify({
+          videoId: video._id,
+          ...reportData
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enviar el reporte');
+      }
+      
+      setReportStatus({ message: 'Reporte enviado correctamente. Gracias por ayudarnos.', type: 'success' });
+      
+      // Cerrar el modal después de 2 segundos
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportData({
+          reason: '',
+          details: '',
+          name: currentUser?.username || '',
+          email: currentUser?.email || ''
+        });
+      }, 2000);
+      
+    } catch (err) {
+      setReportStatus({ message: err.message || 'Error al enviar el reporte', type: 'error' });
+    } finally {
+      setIsReporting(false);
     }
   };
 
@@ -133,6 +192,16 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
               <FontAwesomeIcon icon={faComment} />
               {video.comments.length} {video.comments.length === 1 ? 'Comment' : 'Comments'}
             </button>
+            {showReport && (
+              <button 
+                onClick={() => setShowReportModal(true)} 
+                className="report-button"
+                aria-label="Reportar video"
+              >
+                <FontAwesomeIcon icon={faFlag} />
+                Reportar
+              </button>
+            )}
           </div>
           {showComments && (
             <Comments
@@ -165,6 +234,95 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
                 Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showReportModal && (
+        <div className="modal-overlay">
+          <div className="report-modal">
+            <h3>Reportar Video</h3>
+            <p className="report-description">Por favor indícanos por qué quieres reportar este video</p>
+            
+            {reportStatus.message && (
+              <div className={`report-status ${reportStatus.type}`}>
+                {reportStatus.message}
+              </div>
+            )}
+            
+            <form onSubmit={handleReportSubmit}>
+              <div className="form-group">
+                <label htmlFor="report-reason">Razón del reporte</label>
+                <select 
+                  id="report-reason" 
+                  value={reportData.reason}
+                  onChange={(e) => setReportData({...reportData, reason: e.target.value})}
+                  required
+                >
+                  <option value="">Selecciona una razón</option>
+                  <option value="inappropriate">Contenido inapropiado</option>
+                  <option value="copyright">Infracción de derechos de autor</option>
+                  <option value="violent">Contenido violento</option>
+                  <option value="harassment">Acoso o intimidación</option>
+                  <option value="misinformation">Información falsa</option>
+                  <option value="other">Otros motivos</option>
+                </select>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="report-details">Detalles adicionales (opcional)</label>
+                <textarea
+                  id="report-details"
+                  value={reportData.details}
+                  onChange={(e) => setReportData({...reportData, details: e.target.value})}
+                  placeholder="Proporciona más información sobre tu reporte"
+                  rows="4"
+                ></textarea>
+              </div>
+              
+              {!currentUser && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="report-name">Tu nombre (opcional)</label>
+                    <input
+                      type="text"
+                      id="report-name"
+                      value={reportData.name}
+                      onChange={(e) => setReportData({...reportData, name: e.target.value})}
+                      placeholder="Anónimo"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="report-email">Tu email (opcional)</label>
+                    <input
+                      type="email"
+                      id="report-email"
+                      value={reportData.email}
+                      onChange={(e) => setReportData({...reportData, email: e.target.value})}
+                      placeholder="Para recibir actualizaciones sobre tu reporte"
+                    />
+                  </div>
+                </>
+              )}
+              
+              <div className="report-actions">
+                <button 
+                  type="button" 
+                  onClick={() => setShowReportModal(false)} 
+                  className="cancel-button"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="submit-report-button" 
+                  disabled={isReporting}
+                >
+                  {isReporting ? 'Enviando...' : 'Enviar reporte'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -1,0 +1,247 @@
+.video-view-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.video-view-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.video-view-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.8rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #495057;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  gap: 0.5rem;
+}
+
+.back-button:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.video-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.video-container .video-card {
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  text-align: center;
+}
+
+.loading-container {
+  flex-direction: column;
+}
+
+.loading-container p {
+  color: #666;
+  margin-top: 10px;
+}
+
+.error-container {
+  color: #dc3545;
+  background-color: #f8d7da;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Report banner styling */
+.report-banner {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #fff8f8;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.report-icon {
+  font-size: 2rem;
+  color: #e74c3c;
+  display: flex;
+  align-items: center;
+}
+
+.report-info {
+  flex: 1;
+}
+
+.report-info h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #e74c3c;
+}
+
+.report-info p {
+  margin: 0.5rem 0;
+  color: #495057;
+}
+
+.report-status {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.report-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.report-status.in-progress {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.report-status.resolved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.admin-action {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.admin-action.approve {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.admin-action.approve:hover {
+  background-color: #c3e6cb;
+}
+
+.admin-action.remove {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.admin-action.remove:hover {
+  background-color: #f5c6cb;
+}
+
+.admin-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-message {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.action-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.action-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #61dafb;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.retry-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #61dafb;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.retry-button:hover {
+  background-color: #4fa8c7;
+}
+
+@media (max-width: 768px) {
+  .video-view-container {
+    padding: 1rem;
+  }
+  
+  .report-banner {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .report-icon {
+    font-size: 1.5rem;
+  }
+  
+  .admin-actions {
+    flex-direction: column;
+  }
+}

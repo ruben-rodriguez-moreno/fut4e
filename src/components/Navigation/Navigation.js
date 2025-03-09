@@ -12,7 +12,8 @@ import {
   faStar, 
   faUserCircle, 
   faEye, 
-  faSignOutAlt 
+  faSignOutAlt,
+  faCog
 } from '@fortawesome/free-solid-svg-icons';
 import { getFullImageUrl } from '../../utils/imageUtils';
 import './Navigation.css';
@@ -21,6 +22,9 @@ function Navigation({ currentUser, searchQuery, onSearch, onShowAuth, onLogout, 
   const [showMenu, setShowMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
+
+  // Verificar si el usuario es administrador
+  const isAdmin = currentUser && currentUser.email === process.env.REACT_APP_ADMIN_EMAIL;
 
   const handlePageChange = (path) => {
     navigate(path);
@@ -178,6 +182,13 @@ function Navigation({ currentUser, searchQuery, onSearch, onShowAuth, onLogout, 
                     <FontAwesomeIcon icon={faEye} className="menu-icon" />
                     Ver Perfil Público
                   </Link>
+                  {/* Mostrar enlace al panel admin solo para administradores */}
+                  {isAdmin && (
+                    <Link to="/admin" className="menu-item" onClick={() => setShowProfileMenu(false)}>
+                      <FontAwesomeIcon icon={faCog} className="menu-icon" />
+                      Panel Administrativo
+                    </Link>
+                  )}
                   <button 
                     className="menu-item"
                     onClick={() => {

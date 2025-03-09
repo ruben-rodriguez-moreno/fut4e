@@ -17,6 +17,20 @@ import { faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { getFullImageUrl } from './utils/imageUtils';
 import Navigation from './components/Navigation/Navigation';
 import UserSearch from './components/Pages/UserSearch';
+import NewPasswordForm from './components/Auth/NewPasswordForm';
+import Footer from './components/Footer/Footer';
+import About from './components/Pages/About';
+import Terms from './components/Pages/Terms';
+import Privacy from './components/Pages/Privacy';
+import Contact from './components/Pages/Contact';
+// Import ErrorBoundary component
+import ErrorBoundary from './components/Common/ErrorBoundary';
+
+// Importar el componente AdminDashboard
+import AdminDashboard from './components/Pages/Admin/AdminDashboard';
+
+// Import the new VideoView component
+import VideoView from './components/Pages/VideoView';
 
 // For the not found route since useNavigate must be used within Router context
 function NotFoundPage() {
@@ -359,10 +373,35 @@ function App() {
               <Navigate to="/buscar-usuarios" replace />
             } />
             
+            {/* Añadir la ruta para la página Acerca de */}
+            <Route path="/about" element={<About />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/contact" element={<Contact />} />
+            
+            {/* Ruta para el panel administrativo */}
+            <Route path="/admin" element={
+              <AdminDashboard currentUser={currentUser} />
+            } />
+            
+            {/* Add new route for viewing individual videos */}
+            <Route path="/video/:videoId" element={
+              <ErrorBoundary fallback={<div className="error-container">Ha ocurrido un error al cargar la página del video.</div>}>
+                <VideoView 
+                  currentUser={currentUser}
+                  onLike={handleLike}
+                  onComment={handleComment}
+                  onDelete={handleDelete}
+                />
+              </ErrorBoundary>
+            } />
+            
             {/* Ruta para manejar URLs no encontradas */}
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/reset-password/:token" element={<NewPasswordForm />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </BrowserRouter>
   );
