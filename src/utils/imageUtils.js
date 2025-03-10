@@ -1,33 +1,36 @@
+import { API_BASE_URL } from './apiConfig';
+
 /**
- * Construye una URL completa para recursos almacenados en el servidor
- * @param {string} relativePath - Ruta relativa de la imagen (ej: /uploads/profile_pictures/img.jpg)
- * @param {string} defaultPath - Ruta predeterminada si no hay imagen (opcional)
- * @param {boolean} avoidCache - Si es true, agrega un parámetro de tiempo para evitar la caché
- * @returns {string} - URL completa de la imagen
+ * Construye la URL completa para las imágenes y archivos
+ * @param {string} path - Ruta relativa del archivo
+ * @returns {string} - URL completa del archivo
  */
-export const getFullImageUrl = (relativePath, defaultPath = '/default-profile.png', avoidCache = false) => {
-  if (!relativePath) return defaultPath;
-  
-  // Si la ruta ya comienza con http:// o https://, asumimos que ya es una URL completa
-  if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-    return avoidCache && !relativePath.includes('?') 
-      ? `${relativePath}?t=${Date.now()}`
-      : relativePath;
+export const getFullImageUrl = (path) => {
+  if (!path) return `${API_BASE_URL}/default-profile.png`;
+
+  // Si ya es una URL completa (http:// o https://)
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
   }
+
+  // Si es una ruta relativa comenzando con /
+  if (path.startsWith('/')) {
+    return `${API_BASE_URL}${path}`; 
+  }
+
+  // Para otros casos, asumimos que es un archivo en la carpeta uploads
+  return `${API_BASE_URL}/uploads/${path}`;
+};
+
+/**
+ * Construye la URL para las miniaturas de videos
+ * @param {string} videoUrl - URL del video
+ * @returns {string} - URL de la miniatura
+ */
+export const getVideoThumbnailUrl = (videoUrl) => {
+  if (!videoUrl) return `${API_BASE_URL}/default-thumbnail.jpg`;
   
-  // La URL base del servidor API
-  const API_BASE_URL = 'http://localhost:5000';
-  
-  // Asegurarse de que la ruta relativa comienza con "/"
-  const normalizedPath = relativePath.startsWith('/') 
-    ? relativePath 
-    : `/${relativePath}`;
-  
-  // Construir la URL completa
-  const fullUrl = `${API_BASE_URL}${normalizedPath}`;
-  
-  // Añadir parámetro para evitar caché si es necesario
-  return avoidCache && !fullUrl.includes('?') 
-    ? `${fullUrl}?t=${Date.now()}` 
-    : fullUrl;
+  // Lógica para conseguir la miniatura del video
+  // Por ahora, usamos la URL por defecto
+  return `${API_BASE_URL}/default-thumbnail.jpg`;
 };

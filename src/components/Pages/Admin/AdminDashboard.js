@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import SupportRequests from './SupportRequests';
 import UserManagement from './UserManagement';
+import ContentManagement from './ContentManagement';
 import './AdminDashboard.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faUsers, faVideo, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { getFullImageUrl } from '../../../utils/imageUtils';
+import { API_BASE_URL } from '../../../utils/apiConfig';
 
 function AdminDashboard({ currentUser }) {
   const [activeTab, setActiveTab] = useState('support');
@@ -48,7 +51,10 @@ function AdminDashboard({ currentUser }) {
               <FontAwesomeIcon icon={faUsers} className="nav-icon" />
               Gestión de Usuarios
             </li>
-            <li className="disabled">
+            <li 
+              className={activeTab === 'content' ? 'active' : ''}
+              onClick={() => setActiveTab('content')}
+            >
               <FontAwesomeIcon icon={faVideo} className="nav-icon" />
               Gestión de Contenido
             </li>
@@ -62,10 +68,10 @@ function AdminDashboard({ currentUser }) {
             <span className="admin-label">Administrador</span>
             <div className="admin-user-info">
               <img 
-                src={currentUser.profilePicture || '/default-profile.png'} 
+                src={getFullImageUrl(currentUser.profilePicture)} 
                 alt="Admin" 
                 className="admin-avatar"
-                onError={(e) => { e.target.src = '/default-profile.png'; }}
+                onError={(e) => { e.target.src = `${API_BASE_URL}/default-profile.png`; }}
               />
               <div>
                 <p className="admin-name">{currentUser.username}</p>
@@ -78,7 +84,7 @@ function AdminDashboard({ currentUser }) {
         <div className="admin-content">
           {activeTab === 'support' && <SupportRequests />}
           {activeTab === 'users' && <UserManagement />}
-          {activeTab === 'content' && <div className="coming-soon">Gestión de contenido - Próximamente</div>}
+          {activeTab === 'content' && <ContentManagement />}
           {activeTab === 'stats' && <div className="coming-soon">Estadísticas - Próximamente</div>}
         </div>
       </div>
