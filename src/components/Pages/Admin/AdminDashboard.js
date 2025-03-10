@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import SupportRequests from './SupportRequests';
 import UserManagement from './UserManagement';
 import ContentManagement from './ContentManagement';
+import Statistics from './Statistics';  // Importar el nuevo componente
 import './AdminDashboard.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faUsers, faVideo, faChartLine } from '@fortawesome/free-solid-svg-icons';
@@ -58,7 +59,10 @@ function AdminDashboard({ currentUser }) {
               <FontAwesomeIcon icon={faVideo} className="nav-icon" />
               Gestión de Contenido
             </li>
-            <li className="disabled">
+            <li 
+              className={activeTab === 'stats' ? 'active' : ''}
+              onClick={() => setActiveTab('stats')}
+            >
               <FontAwesomeIcon icon={faChartLine} className="nav-icon" />
               Estadísticas
             </li>
@@ -85,7 +89,7 @@ function AdminDashboard({ currentUser }) {
           {activeTab === 'support' && <SupportRequests />}
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'content' && <ContentManagement />}
-          {activeTab === 'stats' && <div className="coming-soon">Estadísticas - Próximamente</div>}
+          {activeTab === 'stats' && <Statistics />}
         </div>
       </div>
     </div>

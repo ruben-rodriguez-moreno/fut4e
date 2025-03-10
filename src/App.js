@@ -148,15 +148,22 @@ function App() {
       const response = await fetch(`http://localhost:5000/api/videos/${videoId}/like`, {
         method: 'POST',
         headers: {
-          'x-auth-token': localStorage.getItem('token')
+          'x-auth-token': localStorage.getItem('token'),
+          'Content-Type': 'application/json'
         }
       });
-      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error('Error al procesar el like');
+      }
+      
+      const updatedVideo = await response.json();
+      
       setVideos(videos.map(video => 
-        video._id === videoId ? data : video
+        video._id === videoId ? updatedVideo : video
       ));
     } catch (err) {
-      console.error(err);
+      console.error('Error al dar/quitar like:', err);
     }
   };
 

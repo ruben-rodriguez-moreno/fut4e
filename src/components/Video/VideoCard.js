@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faComment, faTrash, faSpinner, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as solidHeart, faSpinner, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as regularHeart, faComment, faFlag } from '@fortawesome/free-regular-svg-icons';
 import './VideoCard.css';
 
 function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor = true, showReport = true }) {
@@ -21,6 +22,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
   const [reportStatus, setReportStatus] = useState({ message: '', type: '' });
 
   const handleLike = () => {
+    if (!currentUser) return;
     onLike(video._id);
   };
 
@@ -182,10 +184,15 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
           )}
           <div className="video-actions">
             <button 
-              onClick={handleLike}
-              className={!currentUser ? 'action-button disabled' : `action-button ${isLiked ? 'liked' : ''}`}
+              onClick={handleLike} 
+              className={`like-button ${isLiked ? 'liked' : ''}`}
+              disabled={!currentUser}
+              aria-label={isLiked ? "Quitar me gusta" : "Me gusta"}
             >
-              <FontAwesomeIcon icon={faHeart} className={isLiked ? 'liked-icon' : ''} />
+              <FontAwesomeIcon 
+                icon={isLiked ? solidHeart : regularHeart} 
+                className="like-icon" 
+              />
               {video.likes.length} {video.likes.length === 1 ? 'Like' : 'Likes'}
             </button>
             <button onClick={() => setShowComments(!showComments)}>
