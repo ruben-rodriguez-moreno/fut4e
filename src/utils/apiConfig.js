@@ -3,7 +3,7 @@
  */
 
 // URL base de la API
-export const API_BASE_URL = 'http://localhost:5000';
+export const API_BASE_URL = 'https://fut4e.onrender.com';
 
 // Timeout para solicitudes en milisegundos
 export const API_TIMEOUT = 10000;
