@@ -35,7 +35,7 @@ function VideoView({ currentUser, onLike, onComment, onDelete }) {
   // Memoize fetchReportDetails function
   const fetchReportDetails = useCallback(async (reportId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/support/${reportId}`, {
+      const response = await fetch(`http://https://fut4e.onrender.com/api/support/${reportId}`, {
         headers: {
           'x-auth-token': localStorage.getItem('token')
         }
@@ -80,7 +80,7 @@ function VideoView({ currentUser, onLike, onComment, onDelete }) {
         
         // First check if server is accessible
         try {
-          const healthCheck = await fetch('http://localhost:5000/api/health');
+          const healthCheck = await fetch('http://https://fut4e.onrender.com/api/health');
           console.log('API health check response:', healthCheck.ok ? 'OK' : 'Failed');
         } catch (healthErr) {
           console.error('API health check failed:', healthErr);
@@ -93,7 +93,7 @@ function VideoView({ currentUser, onLike, onComment, onDelete }) {
         
         // Fetch video with proper error handling
         const response = await fetchWithErrorHandling(
-          `http://localhost:5000/api/videos/${videoId}`,
+          `http://https://fut4e.onrender.com/api/videos/${videoId}`,
           {}, 
           8000 // Longer timeout for video data
         );
@@ -174,7 +174,7 @@ function VideoView({ currentUser, onLike, onComment, onDelete }) {
   };
 
   const updateReportStatus = async (reportId, status) => {
-    const response = await fetch(`http://localhost:5000/api/support/${reportId}/status`, {
+    const response = await fetch(`http://https://fut4e.onrender.com/api/support/${reportId}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

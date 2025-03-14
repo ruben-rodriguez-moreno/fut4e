@@ -121,8 +121,8 @@ fut4e-frontend/
 
 4. Edit the `.env` file with your configuration
    ```
-   REACT_APP_API_URL=http://localhost:5000/api
-   REACT_APP_STORAGE_URL=http://localhost:5000/uploads
+   REACT_APP_API_URL=http://https://fut4e.onrender.com/api
+   REACT_APP_STORAGE_URL=http://https://fut4e.onrender.com/uploads
    ```
 
 5. Start the development server

@@ -58,7 +58,7 @@ function Profile({ currentUser, onUpdateProfile }) {
         profilePicture: profilePicture ? profilePicture.name : 'No file selected'
       });
 
-      const response = await fetch('http://localhost:5000/api/auth/me', {
+      const response = await fetch('http://https://fut4e.onrender.com/api/auth/me', {
         method: 'PUT',
         headers: {
           'x-auth-token': localStorage.getItem('token')

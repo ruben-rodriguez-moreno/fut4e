@@ -62,7 +62,7 @@ function App() {
 
   const fetchVideos = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/videos');
+      const response = await fetch('http://https://fut4e.onrender.com/api/videos');
       const data = await response.json();
       setVideos(data.map(video => ({
         ...video,
@@ -82,7 +82,7 @@ function App() {
     if (token) {
       const fetchUserData = async () => {
         try {
-          const response = await fetch('http://localhost:5000/api/auth/me', {
+          const response = await fetch('http://https://fut4e.onrender.com/api/auth/me', {
             headers: {
               'x-auth-token': token
             }
@@ -163,7 +163,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/videos/${videoId}/like`, {
+      const response = await fetch(`http://https://fut4e.onrender.com/api/videos/${videoId}/like`, {
         method: 'POST',
         headers: {
           'x-auth-token': localStorage.getItem('token'),
@@ -199,7 +199,7 @@ function App() {
         detail: { videoId } 
       }));
       
-      const response = await fetch(`http://localhost:5000/api/videos/${videoId}`, {
+      const response = await fetch(`http://https://fut4e.onrender.com/api/videos/${videoId}`, {
         method: 'DELETE',
         headers: {
           'x-auth-token': localStorage.getItem('token'),

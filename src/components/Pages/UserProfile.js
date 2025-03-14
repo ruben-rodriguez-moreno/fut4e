@@ -32,7 +32,7 @@ function UserProfile({ currentUser, onLike, onComment, onDelete, onUpdateProfile
         console.log(`Buscando usuario: ${username} (codificado como: ${encodedUsername})`);
         
         // Primero buscamos al usuario por nombre de usuario
-        const response = await fetch(`http://localhost:5000/api/auth/username/${encodedUsername}`);
+        const response = await fetch(`http://https://fut4e.onrender.com/api/auth/username/${encodedUsername}`);
         
         // Log detallado para depuración
         console.log(`Respuesta del servidor: ${response.status} ${response.statusText}`);
@@ -59,7 +59,7 @@ function UserProfile({ currentUser, onLike, onComment, onDelete, onUpdateProfile
         setUser(userData);
         
         // Luego buscamos sus videos
-        const videosResponse = await fetch(`http://localhost:5000/api/videos?author=${userData._id}`);
+        const videosResponse = await fetch(`http://https://fut4e.onrender.com/api/videos?author=${userData._id}`);
         
         if (!videosResponse.ok) {
           console.warn('No se pudieron cargar los videos:', videosResponse.status);

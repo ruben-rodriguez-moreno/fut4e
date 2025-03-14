@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { getFullImageUrl } from '../../utils/imageUtils';
+import { API_BASE_URL, apiUrl } from '../../utils/apiConfig';
+
 
 function EditProfile({ currentUser, onUpdateProfile }) {
   const [formData, setFormData] = useState({
@@ -26,7 +28,7 @@ function EditProfile({ currentUser, onUpdateProfile }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/me`, {
+      const response = await fetch(apiUrl('/api/auth/me'), {
         method: 'PUT',
         headers: {
           'x-auth-token': localStorage.getItem('token')

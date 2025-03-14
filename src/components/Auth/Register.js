@@ -18,7 +18,7 @@ function Register({ onRegister }) {
       setServerStatus(isOnline);
       
       if (!isOnline) {
-        setError('No se pudo conectar con el servidor. Verifica que el servidor esté en ejecución en localhost:5000.');
+        setError('No se pudo conectar con el servidor. Verifica que el servidor esté en ejecución en https://fut4e.onrender.com.');
       }
     };
     
@@ -124,7 +124,7 @@ function Register({ onRegister }) {
             <div className="server-status-info">
               <p>Posibles soluciones:</p>
               <ul>
-                <li>Verifica que el servidor backend esté en ejecución en <code>http://localhost:5000</code></li>
+                <li>Verifica que el servidor backend esté en ejecución en <code>http://https://fut4e.onrender.com</code></li>
                 <li>Ejecuta el servidor con <code>npm start</code> o <code>node server.js</code> en la carpeta backend</li>
                 <li>Comprueba si hay errores en la consola del servidor</li>
               </ul>
