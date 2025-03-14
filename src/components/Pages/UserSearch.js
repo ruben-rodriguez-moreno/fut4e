@@ -77,11 +77,16 @@ function UserSearch() {
             placeholder="Ingresa un nombre de usuario..."
             className="search-input"
           />
-          <button type="submit" className="search-button" disabled={isLoading}>
+          <button 
+            type="submit" 
+            className="search-button" 
+            disabled={isLoading}
+            aria-label="Buscar usuarios"
+          >
             {isLoading ? (
               <span className="loading-spinner-small"></span>
             ) : (
-              <FontAwesomeIcon icon={faSearch} />
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
             )}
           </button>
         </div>

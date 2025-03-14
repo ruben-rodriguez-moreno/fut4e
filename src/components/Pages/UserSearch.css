@@ -40,6 +40,7 @@
   outline: none;
 }
 
+/* Fix for search button and icon */
 .search-button {
   background-color: var(--color-primary);
   color: white;
@@ -47,10 +48,18 @@
   padding: 0 25px;
   cursor: pointer;
   transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
 }
 
 .search-button:hover {
   background-color: var(--color-primary-dark);
+}
+
+.search-button .search-icon {
+  font-size: 18px;
 }
 
 .search-button:disabled {
