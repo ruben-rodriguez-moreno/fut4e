@@ -159,12 +159,12 @@ function Register({ onRegister }) {
       />
       <input
         type="password"
-        placeholder="Password"
+        placeholder="Contraseña"
         value={formData.password}
         onChange={(e) => setFormData({...formData, password: e.target.value})}
       />
       <button type="submit" disabled={isLoading || !serverStatus}>
-        {isLoading ? 'Registrando...' : 'Register'}
+        {isLoading ? 'Registrando...' : 'Registrarse'}
       </button>
     </form>
   );

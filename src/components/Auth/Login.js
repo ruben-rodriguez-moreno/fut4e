@@ -154,7 +154,7 @@ function Login({ onLogin }) {
         onChange={(e) => setFormData({...formData, password: e.target.value})}
       />
       <button type="submit" disabled={isLoading || !serverStatus}>
-        {isLoading ? 'Iniciando sesión...' : 'Login'}
+        {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
       </button>
     </form>
   );

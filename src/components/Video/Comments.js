@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getAuthHeaders } from '../../utils/auth';
+import { Link } from 'react-router-dom';
 
 function Comments({ videoId, comments, onCommentAdd, isLoggedIn }) {
   const [newComment, setNewComment] = useState('');
@@ -54,12 +55,12 @@ function Comments({ videoId, comments, onCommentAdd, isLoggedIn }) {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Add a comment..."
+          placeholder="Añadir un comentario..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
         />
         {error && <div className="error-message">{error}</div>}
-        <button type="submit" disabled={!newComment.trim()}>Comment</button>
+        <button type="submit" disabled={!newComment.trim()}>Comentar</button>
       </form>
 
       {!isLoggedIn && showLoginMessage && (
@@ -77,7 +78,20 @@ function Comments({ videoId, comments, onCommentAdd, isLoggedIn }) {
       <div className="comments-list">
         {comments?.map((comment, index) => (
           <div key={index} className="comment">
-            <strong>{comment.user?.username || 'Unknown User'}</strong>
+            <Link 
+              to={`/perfil/${encodeURIComponent(comment.user?.username || '')}`} 
+              className="comment-author-link"
+              onClick={(e) => {
+                // Validar que el autor tiene un nombre de usuario válido
+                if (!comment.user?.username || comment.user.username.trim() === '') {
+                  e.preventDefault();
+                  alert('Información de autor no disponible');
+                  return;
+                }
+              }}
+            >
+              {comment.user?.username || 'Usuario desconocido'}
+            </Link>
             <p>{comment.text}</p>
             <small>{new Date(comment.date).toLocaleDateString()}</small>
           </div>

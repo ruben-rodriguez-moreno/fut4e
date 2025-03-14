@@ -8,9 +8,16 @@ function EditProfile({ currentUser, onUpdateProfile }) {
     profilePicture: null,
     preview: getFullImageUrl(currentUser.profilePicture)
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+    setSuccess('');
+    
     const form = new FormData();
     form.append('username', formData.username);
     form.append('description', formData.description);
@@ -35,8 +42,12 @@ function EditProfile({ currentUser, onUpdateProfile }) {
       }
       
       onUpdateProfile(data);
+      setSuccess('¡Perfil actualizado con éxito!');
     } catch (err) {
       console.error(err);
+      setError(err.message || 'Error al actualizar el perfil');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -51,11 +62,13 @@ function EditProfile({ currentUser, onUpdateProfile }) {
 
   return (
     <div className="edit-profile-page">
-      <h2>Edit Profile</h2>
+      <h2>Editar Perfil</h2>
+      {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
       <form onSubmit={handleSubmit} className="edit-profile-form">
         <div className="profile-picture">
-          <img src={formData.preview} alt="Profile" />
-          <label htmlFor="profilePicture" className="file-input-label">Change Profile Picture</label>
+          <img src={formData.preview} alt="Perfil" />
+          <label htmlFor="profilePicture" className="file-input-label">Cambiar foto de perfil</label>
           <input
             id="profilePicture"
             type="file"
@@ -65,16 +78,18 @@ function EditProfile({ currentUser, onUpdateProfile }) {
         </div>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Nombre de usuario"
           value={formData.username}
           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
         />
         <textarea
-          placeholder="Description"
+          placeholder="Descripción"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
         />
-        <button type="submit">Update Profile</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Actualizando...' : 'Actualizar Perfil'}
+        </button>
       </form>
     </div>
   );

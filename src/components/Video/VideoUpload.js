@@ -4,12 +4,15 @@ function VideoUpload({ onUpload }) {
   const [videoData, setVideoData] = useState({
     title: '',
     file: null,
-    category: 'football' // Set default category
+    category: 'football' // Categoría predeterminada
   });
   const [error, setError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsUploading(true);
+    setError('');
     const formData = new FormData();
     formData.append('title', videoData.title);
     formData.append('video', videoData.file);
@@ -28,15 +31,17 @@ function VideoUpload({ onUpload }) {
       onUpload(data);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="upload-form">
-      <h3>Upload Video</h3>
+      <h3>Subir Vídeo</h3>
       <input
         type="text"
-        placeholder="Video Title"
+        placeholder="Título del vídeo"
         value={videoData.title}
         onChange={(e) => setVideoData({...videoData, title: e.target.value})}
         required
@@ -46,7 +51,7 @@ function VideoUpload({ onUpload }) {
         onChange={(e) => setVideoData({...videoData, category: e.target.value})}
         required
       >
-        <option value="football">Football</option>
+        <option value="football">Fútbol</option>
         <option value="skills">Skills</option>
         <option value="highlights">Highlights</option>
       </select>
@@ -57,7 +62,9 @@ function VideoUpload({ onUpload }) {
         required
       />
       {error && <div className="error-message">{error}</div>}
-      <button type="submit">Upload Video</button>
+      <button type="submit" disabled={isUploading}>
+        {isUploading ? 'Subiendo...' : 'Subir Vídeo'}
+      </button>
     </form>
   );
 }

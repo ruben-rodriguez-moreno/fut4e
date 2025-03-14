@@ -192,49 +192,61 @@ function VideoView({ currentUser, onLike, onComment, onDelete }) {
 
   const deleteVideo = async () => {
     try {
-      console.log(`Intentando eliminar video: ${videoId}`);
+      console.log(`[VideoView] Solicitando eliminación del video ${videoId}`);
       
-      // Log de depuración para usuario
-      console.log("Usuario actual:", currentUser);
-      console.log("¿Es admin?", isAdmin());
-      
-      const response = await fetch(`http://localhost:5000/api/videos/${videoId}`, {
-        method: 'DELETE',
-        headers: {
-          'x-auth-token': localStorage.getItem('token'),
-          'Accept': 'application/json'
-        }
-      });
-      
-      // Verificar que la respuesta sea JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('El servidor devolvió una respuesta no válida. Contacte al administrador.');
+      // Llamar a la función central de eliminación
+      if (!onDelete) {
+        throw new Error('Función de eliminación no disponible');
       }
-
-      const data = await response.json();
-      console.log('Respuesta del servidor al eliminar:', data);
-
-      // Muestra información detallada del error para admin
-      if (!response.ok) {
-        console.error("Error de respuesta:", response.status, data);
-        if (response.status === 401) {
-          throw new Error('No tienes autorización para eliminar este video. Contacta al administrador.');
-        } else {
-          throw new Error(data.message || 'Error al eliminar el video');
-        }
-      }
-
-      // Update UI to show video is deleted
+      
+      // La función onDelete ya maneja la actualización del estado global
+      await onDelete(videoId);
+      
+      console.log(`[VideoView] Video ${videoId} eliminado exitosamente`);
+      
+      // Actualizar el estado local inmediatamente
       setVideo(null);
       setError('Este video ha sido eliminado por un administrador.');
       
-      return data;
+      // Programar redirección con tiempo suficiente para actualizar la UI
+      setTimeout(() => {
+        console.log("[VideoView] Redirigiendo a página principal tras eliminación");
+        window.location.href = '/';
+      }, 1500);
+      
+      return { success: true };
+      
     } catch (err) {
-      console.error('Error al eliminar el video:', err);
+      console.error('[VideoView] Error al eliminar el video:', err);
+      setAdminAction({ 
+        type: 'error', 
+        message: `Error: ${err.message}` 
+      });
       throw err;
     }
   };
+  
+  // Mejorar el efecto para manejar eventos de eliminación
+  useEffect(() => {
+    const handleVideoDeleted = (event) => {
+      const { videoId: deletedVideoId, timestamp } = event.detail;
+      
+      if (deletedVideoId === videoId) {
+        console.log(`[VideoView] Recibida notificación de eliminación para video actual ${videoId}`);
+        
+        // Actualizar UI inmediatamente
+        setVideo(null);
+        setError(`Este video ha sido eliminado (${new Date(timestamp).toLocaleTimeString()})`);
+        
+        // No redireccionar aquí - la función que inició la eliminación ya lo manejará
+      }
+    };
+    
+    window.addEventListener('videoDeleteSuccess', handleVideoDeleted);
+    return () => {
+      window.removeEventListener('videoDeleteSuccess', handleVideoDeleted);
+    };
+  }, [videoId]);
 
   return (
     <div className="video-view-container">

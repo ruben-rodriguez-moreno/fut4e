@@ -22,10 +22,10 @@ function AuthPage({ onLogin, onRegister, onClose, isLoginMode }) {
           </>
         ) : showLoginMode ? (
           <>
-            <h2>Welcome Back!</h2>
+            <h2>¡Bienvenido de nuevo!</h2>
             <Login onLogin={onLogin} />
             <p className="auth-switch">
-              No tienes cuenta? 
+              ¿No tienes cuenta? 
               <button onClick={() => setShowLoginMode(false)}>
                 Registrate
               </button>
@@ -38,10 +38,10 @@ function AuthPage({ onLogin, onRegister, onClose, isLoginMode }) {
           </>
         ) : (
           <>
-            <h2>Create Account</h2>
+            <h2>Crear Cuenta</h2>
             <Register onRegister={onRegister} />
             <p className="auth-switch">
-              Ya tienes una cuenta? 
+              ¿Ya tienes una cuenta? 
               <button onClick={() => setShowLoginMode(true)}>
                 Inicia sesión
               </button>

@@ -32,6 +32,9 @@ import AdminDashboard from './components/Pages/Admin/AdminDashboard';
 // Import the new VideoView component
 import VideoView from './components/Pages/VideoView';
 
+// Import ScrollToTop component
+import ScrollToTop from './components/Utils/ScrollToTop';
+
 // For the not found route since useNavigate must be used within Router context
 function NotFoundPage() {
   const navigate = useNavigate();
@@ -106,13 +109,28 @@ function App() {
 
   useEffect(() => {
     const handleAuthShow = (event) => {
-      setShowAuth(true);
-      setShowLogin(event.detail.isLogin);
+      // Check if this is a request to show upload UI
+      if (event.detail && event.detail.isUpload) {
+        setShowUpload(true);
+        // Make sure auth modal is NOT shown when upload is requested
+        setShowAuth(false);
+      } else {
+        // Only show auth modal if not requesting upload
+        setShowAuth(true);
+        setShowLogin(event.detail?.isLogin ?? true);
+      }
+    };
+
+    const handleUploadShow = () => {
+      setShowUpload(true);
     };
 
     window.addEventListener('showAuth', handleAuthShow);
+    window.addEventListener('showUpload', handleUploadShow);
+    
     return () => {
       window.removeEventListener('showAuth', handleAuthShow);
+      window.removeEventListener('showUpload', handleUploadShow);
     };
   }, []);
 
@@ -174,22 +192,70 @@ function App() {
     }
 
     try {
+      console.log('[App] Iniciando eliminación del video:', videoId);
+      
+      // Notificar a todos los componentes que la eliminación está en proceso
+      window.dispatchEvent(new CustomEvent('videoDeleteInProgress', { 
+        detail: { videoId } 
+      }));
+      
       const response = await fetch(`http://localhost:5000/api/videos/${videoId}`, {
         method: 'DELETE',
         headers: {
-          'x-auth-token': localStorage.getItem('token')
+          'x-auth-token': localStorage.getItem('token'),
+          'Accept': 'application/json'
         }
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log('[App] Respuesta del servidor:', data);
 
       if (data.success) {
-        setVideos(prevVideos => prevVideos.filter(video => video._id !== videoId));
-        // Recargar la página después de eliminar el video exitosamente
-        window.location.reload();
+        console.log('[App] Video eliminado con éxito, actualizando estado global');
+        
+        // IMPORTANTE: Crear una versión inmutable del estado para la actualización
+        const previousVideos = [...videos];
+        
+        // Actualizar el estado usando una función callback para garantizar el estado más reciente
+        setVideos(prevState => {
+          const updatedVideos = prevState.filter(video => video._id !== videoId);
+          console.log(`[App] Videos antes: ${prevState.length}, después: ${updatedVideos.length}`);
+          return updatedVideos;
+        });
+        
+        // Notificar a todos los componentes que la eliminación fue exitosa
+        window.dispatchEvent(new CustomEvent('videoDeleteSuccess', { 
+          detail: { videoId, timestamp: Date.now() } 
+        }));
+        
+        // Forzar actualización en el siguiente ciclo para asegurar consistencia
+        setTimeout(() => {
+          const remainingVideos = videos.filter(v => v._id === videoId);
+          if (remainingVideos.length > 0) {
+            console.warn('[App] Inconsistencia detectada, forzando actualización del estado');
+            setVideos(previous => previous.filter(v => v._id !== videoId));
+          }
+        }, 300);
+        
+        return { success: true, data };
       }
+      
+      throw new Error(data.message || 'Error desconocido al eliminar el video');
+      
     } catch (err) {
-      console.error('Error deleting video:', err);
+      console.error('[App] Error al eliminar video:', err);
+      
+      // Notificar del error a todos los componentes interesados
+      window.dispatchEvent(new CustomEvent('videoDeleteError', { 
+        detail: { videoId, error: err.message } 
+      }));
+      
+      throw err;
     }
   };
 
@@ -240,6 +306,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop /> {/* Añadir componente ScrollToTop aquí */}
       <div className="App">
         <Navigation 
           currentUser={currentUser} 
@@ -315,6 +382,7 @@ function App() {
                   onLike={handleLike}
                   onComment={handleComment}
                   onDelete={handleDelete}
+                  onUpload={() => setShowUpload(true)}  // Add this line
                 />
               ) : <Navigate to="/" replace state={{ showLogin: true }} />
             } />

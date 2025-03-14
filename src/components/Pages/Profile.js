@@ -100,7 +100,7 @@ function Profile({ currentUser, onUpdateProfile }) {
         <div className="profile-picture">
           <img 
             src={previewUrl || '/default-profile.png'} 
-            alt="Profile Preview" 
+            alt="Vista previa del perfil" 
             className="profile-preview"
             onError={(e) => {
               console.log('Error al cargar preview:', e.target.src);
@@ -116,13 +116,13 @@ function Profile({ currentUser, onUpdateProfile }) {
               className="file-input"
             />
             <label htmlFor="profile-picture" className="file-label">
-              Choose Profile Picture
+              Elegir foto de perfil
             </label>
           </div>
         </div>
         
         <div className="form-group">
-          <label htmlFor="username">Username</label>
+          <label htmlFor="username">Nombre de usuario</label>
           <input
             type="text"
             id="username"
@@ -134,7 +134,7 @@ function Profile({ currentUser, onUpdateProfile }) {
         </div>
         
         <div className="form-group">
-          <label htmlFor="description">About Me</label>
+          <label htmlFor="description">Sobre mí</label>
           <textarea
             id="description"
             name="description"
@@ -149,7 +149,7 @@ function Profile({ currentUser, onUpdateProfile }) {
           className="submit-btn"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Updating...' : 'Update Profile'}
+          {isSubmitting ? 'Actualizando...' : 'Actualizar Perfil'}
         </button>
       </form>
     </div>

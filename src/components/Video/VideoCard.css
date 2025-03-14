@@ -1,6 +1,6 @@
 .video-card {
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible; /* Allow comments to overflow */
   background-color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -8,11 +8,20 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  /* Add higher z-index to handle hover state properly */
+  z-index: 1;
 }
 
+/* Make hovered cards appear above others, but below active comment cards */
 .video-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+/* Give higher z-index to cards with active comments */
+.video-card.with-active-comments {
+  z-index: 20;
 }
 
 .video-card video {
@@ -88,6 +97,7 @@
   gap: 1rem;
   margin-top: auto;
   padding-top: 0.75rem;
+  justify-content: space-around;
 }
 
 .video-actions button {
@@ -102,6 +112,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .video-actions button:hover {
@@ -339,33 +350,74 @@
 
 .comments-list {
   margin-top: 1rem;
-  max-height: 250px;
-  overflow-y: auto;
+  max-height: none; /* Remove fixed height since parent container handles it */
+  list-style-type: none;
+  padding: 0;
 }
 
 .comment {
-  padding: 0.75rem 0;
+  padding: 1rem;
   border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
 }
 
 .comment:last-child {
   border-bottom: none;
 }
 
+.comment:hover {
+  background-color: #f9f9f9;
+}
+
 .comment strong {
-  color: #333;
+  color: #1a73e8;
   font-weight: 600;
   margin-right: 0.5rem;
+}
+
+.comment p {
+  margin: 0.5rem 0 0.25rem;
+  color: #333;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
 .comment small {
   color: #888;
   font-size: 0.8rem;
+  display: block;
+  text-align: right;
+  margin-top: 0.25rem;
 }
 
-.comment p {
-  margin: 0.5rem 0 0;
-  color: #555;
+/* Comment author styling - make usernames clickable */
+.comment-author-link {
+  color: #1a73e8;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.comment-author-link:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #1a73e8;
+  transition: width 0.3s ease;
+}
+
+.comment-author-link:hover {
+  color: #0d5bdd;
+}
+
+.comment-author-link:hover:after {
+  width: 100%;
 }
 
 /* Responsive Adjustments */
@@ -460,4 +512,135 @@
   0% { transform: scale(1); }
   50% { transform: scale(1.3); }
   100% { transform: scale(1.2); }
+}
+
+.comments-container {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 100%; /* Position right below the card */
+  background-color: white;
+  z-index: 25; /* Much higher z-index */
+  padding: 1rem;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+  max-height: 400px; /* Increased height for more visibility */
+  overflow-y: auto;
+  border-radius: 0 0 12px 12px;
+  animation: fadeIn 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+/* Improved scrollbar styling for comments container */
+.comments-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comments-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.comments-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.comments-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Highlight for active comments button */
+.video-actions button.active {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+  font-weight: 500;
+}
+
+/* For better mobile experience, make comments full overlay on small screens */
+@media screen and (max-width: 768px) {
+  .comments-container {
+    max-height: 350px;
+    padding: 0.75rem;
+  }
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Prevent the height adjustments from affecting layout */
+.video-grid > * {
+  min-height: 0;
+}
+
+/* Estilos para el botón de opciones y su menú */
+.video-options {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.options-button {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.options-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.options-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  min-width: 150px;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+  overflow: hidden;
+}
+
+.option-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.option-item:hover {
+  background-color: #f5f5f5;
+}
+
+.option-item svg {
+  color: #e74c3c;
+}
+
+/* Ocultar el menú al hacer clic fuera */
+.video-card:focus-within .options-menu,
+.video-options:focus-within .options-menu {
+  display: block;
 }
