@@ -36,14 +36,14 @@ function UserProfilePublic({ onLike, onComment, currentUser }) {
         const encodedUsername = encodeURIComponent(cleanUsername);
         console.log(`Buscando perfil público: ${cleanUsername} (codificado: ${encodedUsername})`);
         
-        const response = await fetch(`http://https://fut4e.onrender.com/api/auth/username/${encodedUsername}`);
+        const response = await fetch(`https://fut4e.onrender.com/api/auth/username/${encodedUsername}`);
         console.log(`Respuesta del servidor: ${response.status} ${response.statusText}`);
         
         // Si obtenemos un 404, intentar una búsqueda más flexible
         if (response.status === 404) {
           console.log(`Usuario no encontrado con búsqueda exacta. Intentando búsqueda alternativa...`);
           // Intentar con la API de búsqueda
-          const searchResponse = await fetch(`http://https://fut4e.onrender.com/api/auth/search?username=${encodedUsername}`);
+          const searchResponse = await fetch(`https://fut4e.onrender.com/api/auth/search?username=${encodedUsername}`);
           
           if (searchResponse.ok) {
             const searchResults = await searchResponse.json();
@@ -58,7 +58,7 @@ function UserProfilePublic({ onLike, onComment, currentUser }) {
               setUser(closestMatch);
               
               // Cargar los videos del usuario encontrado
-              const videosResponse = await fetch(`http://https://fut4e.onrender.com/api/videos?author=${closestMatch._id}`);
+              const videosResponse = await fetch(`https://fut4e.onrender.com/api/videos?author=${closestMatch._id}`);
               if (videosResponse.ok) {
                 const videosData = await videosResponse.json();
                 setVideos(Array.isArray(videosData) ? videosData : []);
@@ -100,7 +100,7 @@ function UserProfilePublic({ onLike, onComment, currentUser }) {
         setUser(userData);
         
         // Obtener videos con mejor manejo de errores
-        const videosResponse = await fetch(`http://https://fut4e.onrender.com/api/videos?author=${userData._id}`);
+        const videosResponse = await fetch(`https://fut4e.onrender.com/api/videos?author=${userData._id}`);
         
         if (!videosResponse.ok) {
           console.warn(`No se pudieron cargar los videos: ${videosResponse.status} - ${videosResponse.statusText}`);

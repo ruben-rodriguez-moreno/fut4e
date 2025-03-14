@@ -125,7 +125,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
     setReportStatus({ message: '', type: '' });
     
     try {
-      const response = await fetch('http://https://fut4e.onrender.com/api/support/report-video', {
+      const response = await fetch('https://fut4e.onrender.com/api/support/report-video', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +197,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
           </div>
         )}
         
-        <video src={`http://https://fut4e.onrender.com${video.url}`} controls />
+        <video src={`https://fut4e.onrender.com${video.url}`} controls />
         <div className="video-info">
           <div className="video-header">
             <h3>{video.title}</h3>
@@ -239,7 +239,7 @@ function VideoCard({ video, currentUser, onLike, onComment, onDelete, showAuthor
                   /* 
                   e.preventDefault();
                   const cleanUsername = video.author.username.trim();
-                  fetch(`http://https://fut4e.onrender.com/api/auth/username/${encodeURIComponent(cleanUsername)}`)
+                  fetch(`https://fut4e.onrender.com/api/auth/username/${encodeURIComponent(cleanUsername)}`)
                     .then(response => {
                       if (response.ok) {
                         window.location.href = `/perfil/${encodeURIComponent(cleanUsername)}`;

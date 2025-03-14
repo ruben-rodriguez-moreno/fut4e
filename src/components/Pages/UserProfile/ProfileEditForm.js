@@ -41,7 +41,7 @@ function ProfileEditForm({ user, onSave, onCancel }) {
         form.append('profilePicture', formData.profilePicture);
       }
 
-      const response = await fetch(`http://https://fut4e.onrender.com/api/auth/me`, {
+      const response = await fetch(`https://fut4e.onrender.com/api/auth/me`, {
         method: 'PUT',
         headers: {
           'x-auth-token': localStorage.getItem('token')

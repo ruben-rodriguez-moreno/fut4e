@@ -8,6 +8,8 @@ import EditButton from './UserProfile/EditButton';
 import ProfileEditForm from './UserProfile/ProfileEditForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
+import { API_BASE_URL, apiUrl } from '../../utils/apiConfig';
+
 
 function UserProfile({ currentUser, onLike, onComment, onDelete, onUpdateProfile }) {
   const { username } = useParams(); // Obtener el nombre de usuario de la URL
@@ -32,7 +34,7 @@ function UserProfile({ currentUser, onLike, onComment, onDelete, onUpdateProfile
         console.log(`Buscando usuario: ${username} (codificado como: ${encodedUsername})`);
         
         // Primero buscamos al usuario por nombre de usuario
-        const response = await fetch(`http://https://fut4e.onrender.com/api/auth/username/${encodedUsername}`);
+        const response = await fetch(`https://fut4e.onrender.com/api/auth/username/${encodedUsername}`);
         
         // Log detallado para depuración
         console.log(`Respuesta del servidor: ${response.status} ${response.statusText}`);
@@ -59,7 +61,7 @@ function UserProfile({ currentUser, onLike, onComment, onDelete, onUpdateProfile
         setUser(userData);
         
         // Luego buscamos sus videos
-        const videosResponse = await fetch(`http://https://fut4e.onrender.com/api/videos?author=${userData._id}`);
+        const videosResponse = await fetch(`https://fut4e.onrender.com/api/videos?author=${userData._id}`);
         
         if (!videosResponse.ok) {
           console.warn('No se pudieron cargar los videos:', videosResponse.status);

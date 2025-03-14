@@ -144,14 +144,14 @@ function Navigation({ currentUser, searchQuery, onSearch, onShowAuth, onLogout, 
                       const encodedUsername = encodeURIComponent(cleanUsername);
                       
                       // Verificar primero si el usuario existe
-                      fetch(`http://https://fut4e.onrender.com/api/auth/username/${encodedUsername}`)
+                      fetch(`https://fut4e.onrender.com/api/auth/username/${encodedUsername}`)
                         .then(response => {
                           if (response.ok) {
                             // Usuario existe, proceder a la navegación
                             navigate(`/perfil/${encodedUsername}`);
                           } else if (response.status === 404) {
                             // Intentar con búsqueda alternativa
-                            return fetch(`http://https://fut4e.onrender.com/api/auth/search?username=${encodedUsername}`)
+                            return fetch(`https://fut4e.onrender.com/api/auth/search?username=${encodedUsername}`)
                               .then(searchResponse => {
                                 if (searchResponse.ok) {
                                   return searchResponse.json();

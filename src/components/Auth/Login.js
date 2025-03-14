@@ -120,7 +120,7 @@ function Login({ onLogin }) {
             <div className="server-status-info">
               <p>Posibles soluciones:</p>
               <ul>
-                <li>Verifica que el servidor backend esté en ejecución en <code>http://https://fut4e.onrender.com</code></li>
+                <li>Verifica que el servidor backend esté en ejecución en <code>https://fut4e.onrender.com</code></li>
                 <li>Ejecuta el servidor con <code>npm start</code> o <code>node server.js</code> en la carpeta backend</li>
                 <li>Comprueba si hay errores en la consola del servidor</li>
               </ul>

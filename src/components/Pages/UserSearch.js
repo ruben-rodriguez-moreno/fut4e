@@ -31,7 +31,7 @@ function UserSearch() {
       
       console.log(`Buscando usuarios con la consulta: "${cleanQuery}"`);
       
-      const response = await fetch(`http://https://fut4e.onrender.com/api/auth/search?username=${encodedQuery}`);
+      const response = await fetch(`https://fut4e.onrender.com/api/auth/search?username=${encodedQuery}`);
       
       if (!response.ok) {
         if (response.status === 404) {

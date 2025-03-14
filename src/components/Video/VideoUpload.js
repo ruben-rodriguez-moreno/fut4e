@@ -19,7 +19,7 @@ function VideoUpload({ onUpload }) {
     formData.append('category', videoData.category);
 
     try {
-      const response = await fetch('http://https://fut4e.onrender.com/api/videos', {
+      const response = await fetch('https://fut4e.onrender.com/api/videos', {
         method: 'POST',
         headers: {
           'x-auth-token': localStorage.getItem('token')

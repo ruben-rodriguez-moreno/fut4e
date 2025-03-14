@@ -31,7 +31,7 @@ function Comments({ videoId, comments, onCommentAdd, isLoggedIn }) {
     }
 
     try {
-      const response = await fetch(`http://https://fut4e.onrender.com/api/videos/${videoId}/comment`, {
+      const response = await fetch(`https://fut4e.onrender.com/api/videos/${videoId}/comment`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { getFullImageUrl } from '../../utils/imageUtils';
 import { API_BASE_URL, apiUrl } from '../../utils/apiConfig';
 
-
 function EditProfile({ currentUser, onUpdateProfile }) {
   const [formData, setFormData] = useState({
     username: currentUser.username,
@@ -28,13 +27,15 @@ function EditProfile({ currentUser, onUpdateProfile }) {
     }
 
     try {
-      const response = await fetch(apiUrl('/api/auth/me'), {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: 'PUT',
         headers: {
           'x-auth-token': localStorage.getItem('token')
         },
         body: form
       });
+      
+      // Resto del código...
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       
